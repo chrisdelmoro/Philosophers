@@ -6,7 +6,7 @@
 /*   By: ccamargo <ccamargo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 02:22:21 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/05/31 02:22:52 by ccamargo         ###   ########.fr       */
+/*   Updated: 2023/06/05 01:34:58 by ccamargo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,4 +23,9 @@ void	free_philos(t_philo **philos, int num_of_philos)
 		i++;
 	}
 	free(philos);
+}
+
+void	free_common_data(t_common_data *common)
+{
+	free(common);
 }

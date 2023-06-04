@@ -8,7 +8,6 @@ SRC_DIR			= ./src/
 SRC				= 	main.c \
 					utils/ft_isdigit.c \
 					utils/ft_atoi.c \
-					utils/convert_args.c \
 					utils/initialization_utils.c \
 					utils/free_utils.c \
 					utils/time_utils.c \

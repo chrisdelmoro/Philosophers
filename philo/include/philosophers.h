@@ -6,7 +6,7 @@
 /*   By: ccamargo <ccamargo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/25 18:35:47 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/05/31 22:49:08 by ccamargo         ###   ########.fr       */
+/*   Updated: 2023/06/05 01:37:39 by ccamargo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ typedef struct s_philo
 
 //Validation Utils
 int				is_input_valid(int argc, char **argv);
-t_common_data	convert_args(char **argv);
+t_common_data	*init_common_data(char **argv);
 
 //Initialization Utils
 void			initialize_philo(t_philo *philo, t_common_data *common, int i);
@@ -50,6 +50,7 @@ long long		get_current_timestamp(t_philo *philo);
 
 //Free Utils
 void			free_philos(t_philo **philos, int num_of_philos);
+void			free_common_data(t_common_data *common);
 
 int				ft_isdigit(int c);
 int				ft_atoi(const char *nptr);
