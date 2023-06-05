@@ -6,18 +6,34 @@
 /*   By: ccamargo <ccamargo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 02:24:59 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/06/05 02:09:46 by ccamargo         ###   ########.fr       */
+/*   Updated: 2023/06/05 03:26:24 by ccamargo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philosophers.h>
 
-t_common_data	*init_common_data(char **argv)
+void	init_common_data_2(t_common_data *common)
 {
-	t_common_data	*common;
 	int	i;
 
 	i = 0;
+	common->fork = malloc(sizeof(pthread_mutex_t *) * common->num_of_philos);
+	while (common->num_of_philos > i)
+	{
+		common->fork[i] = malloc(sizeof(pthread_mutex_t));
+		pthread_mutex_init(common->fork[i], NULL);
+		i++;
+	}
+	common->get_time = malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(common->get_time, NULL);
+	common->print = malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(common->print, NULL);
+}
+
+t_common_data	*init_common_data(char **argv)
+{
+	t_common_data	*common;
+
 	common = malloc(sizeof(t_common_data));
 	common->num_of_philos = ft_atoi(argv[1]);
 	common->time_to_die = ft_atoi(argv[2]);
@@ -29,18 +45,7 @@ t_common_data	*init_common_data(char **argv)
 		common->opt_num_of_meals = -1;
 	common->timestamp_init = -1;
 	common->timestamp_current = -1;
-	common->fork = malloc(sizeof(pthread_mutex_t *) * common->num_of_philos);
-	while (common->num_of_philos > i)
-	{
-		common->fork[i] = malloc(sizeof(pthread_mutex_t));
-		pthread_mutex_init(common->fork[i], NULL);
-		i++;
-	
-	}
-	common->get_time = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(common->get_time, NULL);
-	common->print = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(common->print, NULL);
+	init_common_data_2(common);
 	return (common);
 }
 
