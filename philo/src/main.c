@@ -6,27 +6,37 @@
 /*   By: ccamargo <ccamargo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/25 18:34:14 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/06/05 01:38:33 by ccamargo         ###   ########.fr       */
+/*   Updated: 2023/06/05 02:33:13 by ccamargo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philosophers.h>
 
-void	*philo_life(void *philo)
+void	*philo_life(void *philo_data)
 {
-	set_timestamps((t_philo *)philo);
-	printf("%lld Philosopher %d has taken a fork.\n", \
-	get_current_timestamp((t_philo *)philo), ((t_philo *)philo)->id + 1);
-	printf("%lld Philosopher %d has taken a fork.\n", \
-	get_current_timestamp((t_philo *)philo), ((t_philo *)philo)->id + 1);
-	printf("%lld Philosopher %d is eating.\n", \
-	get_current_timestamp((t_philo *)philo), ((t_philo *)philo)->id + 1);
-	usleep(((t_philo *)philo)->common_data->time_to_eat * 1000);
-	printf("%lld Philosopher %d is sleeping.\n", \
-	get_current_timestamp((t_philo *)philo), ((t_philo *)philo)->id + 1);
-	usleep(((t_philo *)philo)->common_data->time_to_sleep * 1000);
-	printf("%lld Philosopher %d is thinking.\n", \
-	get_current_timestamp((t_philo *)philo), ((t_philo *)philo)->id + 1);
+	t_philo *philo;
+	
+	philo = (t_philo *) philo_data;
+	pthread_mutex_lock(philo->common_data->get_time);
+	set_timestamps(philo);
+	pthread_mutex_unlock(philo->common_data->get_time);
+	//printf("%lld Philosopher %d has taken a fork.\n", get_current_timestamp(philo), (philo)->id + 1);
+	//printf("%lld Philosopher %d has taken a fork.\n", get_current_timestamp(philo), (philo)->id + 1);
+	pthread_mutex_lock(philo->left_fork);
+	pthread_mutex_lock(philo->right_fork);
+	pthread_mutex_lock(philo->common_data->print);
+	printf("%lld Philosopher %d is eating.\n", get_current_timestamp(philo), (philo)->id + 1);
+	pthread_mutex_unlock(philo->common_data->print);
+	usleep((philo)->common_data->time_to_eat * 1000);
+	pthread_mutex_unlock(philo->left_fork);
+	pthread_mutex_unlock(philo->right_fork);
+	pthread_mutex_lock(philo->common_data->print);
+	printf("%lld Philosopher %d is sleeping.\n", get_current_timestamp(philo), (philo)->id + 1);
+	pthread_mutex_unlock(philo->common_data->print);
+	usleep((philo)->common_data->time_to_sleep * 1000);
+	pthread_mutex_lock(philo->common_data->print);
+	printf("%lld Philosopher %d is thinking.\n", get_current_timestamp(philo), (philo)->id + 1);
+	pthread_mutex_unlock(philo->common_data->print);
 	return (NULL);
 }
 

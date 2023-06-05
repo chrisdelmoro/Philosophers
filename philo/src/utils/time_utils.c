@@ -6,7 +6,7 @@
 /*   By: ccamargo <ccamargo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 02:26:54 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/05/31 22:51:02 by ccamargo         ###   ########.fr       */
+/*   Updated: 2023/06/05 02:15:15 by ccamargo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,14 +32,18 @@ void	set_timestamps(t_philo *philo)
 long long	get_current_timestamp(t_philo *philo)
 {
 	struct timeval	current_time;
+	long long		return_time;
 
 	if (gettimeofday(&current_time, NULL))
 	{
 		printf("Error geting time of day!\n");
 		return (-1);
 	}
+	pthread_mutex_lock(philo->common_data->get_time);
 	philo->common_data->timestamp_current = (current_time.tv_sec * 1000) + \
 	(current_time.tv_usec / 1000);
-	return (philo->common_data->timestamp_current - \
-	philo->common_data->timestamp_init);
+	return_time = philo->common_data->timestamp_current - \
+	philo->common_data->timestamp_init;
+	pthread_mutex_unlock(philo->common_data->get_time);
+	return (return_time);
 }

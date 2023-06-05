@@ -6,7 +6,7 @@
 /*   By: ccamargo <ccamargo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 02:22:21 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/06/05 01:34:58 by ccamargo         ###   ########.fr       */
+/*   Updated: 2023/06/05 02:10:14 by ccamargo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,16 @@ void	free_philos(t_philo **philos, int num_of_philos)
 
 void	free_common_data(t_common_data *common)
 {
+	int	i;
+
+	i = 0;
+	while (i < common->num_of_philos)
+	{
+		free(common->fork[i]);
+		i++;
+	}
+	free(common->fork);
+	free(common->print);
+	free(common->get_time);
 	free(common);
 }
