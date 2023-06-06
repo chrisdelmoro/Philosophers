@@ -6,7 +6,7 @@
 /*   By: ccamargo <ccamargo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 02:24:59 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/06/05 03:26:24 by ccamargo         ###   ########.fr       */
+/*   Updated: 2023/06/06 15:25:04 by ccamargo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,10 @@ void	init_common_data_2(t_common_data *common)
 	pthread_mutex_init(common->get_time, NULL);
 	common->print = malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(common->print, NULL);
+	common->dead_or_alive_mutex = malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(common->dead_or_alive_mutex, NULL);
+	common->last_meal_mutex = malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(common->last_meal_mutex, NULL);
 }
 
 t_common_data	*init_common_data(char **argv)
@@ -45,6 +49,7 @@ t_common_data	*init_common_data(char **argv)
 		common->opt_num_of_meals = -1;
 	common->timestamp_init = -1;
 	common->timestamp_current = -1;
+	common->someone_died = 0;
 	init_common_data_2(common);
 	return (common);
 }
@@ -60,4 +65,5 @@ void	initialize_philo(t_philo *philo, t_common_data *common, int i)
 		philo->right_fork = common->fork[i];
 		philo->left_fork = common->fork[(i + 1) % common->num_of_philos];
 	}
+	philo->last_meal = -1;
 }

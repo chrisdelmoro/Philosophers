@@ -6,7 +6,7 @@
 /*   By: ccamargo <ccamargo@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/25 18:35:47 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/06/05 02:09:55 by ccamargo         ###   ########.fr       */
+/*   Updated: 2023/06/06 15:23:50 by ccamargo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,14 @@ typedef struct s_common_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				opt_num_of_meals;
+	int				someone_died;
 	long long		timestamp_init;
 	long long		timestamp_current;
 	pthread_mutex_t	**fork;
 	pthread_mutex_t	*print;
 	pthread_mutex_t	*get_time;
+	pthread_mutex_t	*dead_or_alive_mutex;
+	pthread_mutex_t	*last_meal_mutex;
 }	t_common_data;
 
 typedef struct s_philo
@@ -38,6 +41,7 @@ typedef struct s_philo
 	t_common_data	*common_data;
 	int				id;
 	int				meals_had;
+	long long		last_meal;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 }	t_philo;
