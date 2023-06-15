@@ -6,7 +6,7 @@
 /*   By: christian <christian@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 02:24:59 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/06/15 19:31:49 by christian        ###   ########.fr       */
+/*   Updated: 2023/06/15 19:52:20 by christian        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ t_common_data	*init_common_data(char **argv)
 	else
 		common->opt_num_of_meals = -1;
 	common->timestamp_init = -1;
-	//common->timestamp_current = -1;
 	common->someone_died = 0;
 	init_common_data_2(common);
 	return (common);
@@ -58,6 +57,7 @@ void	initialize_philo(t_philo *philo, t_common_data *common, int i)
 {
 	philo->common_data = common;
 	philo->id = i;
+	philo->meals_had = 0;
 	philo->left_fork = common->fork[i];
 	philo->right_fork = common->fork[(i + 1) % common->num_of_philos];
 	if ((i + 1) % common->num_of_philos == 0)

@@ -6,7 +6,7 @@
 /*   By: christian <christian@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/25 18:35:47 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/06/15 19:31:35 by christian        ###   ########.fr       */
+/*   Updated: 2023/06/15 19:51:14 by christian        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ typedef struct s_common_data
 	int				opt_num_of_meals;
 	int				someone_died;
 	long long		timestamp_init;
-	// long long		timestamp_current;
 	pthread_mutex_t	**fork;
 	pthread_mutex_t	*print;
 	pthread_mutex_t	*get_time;
