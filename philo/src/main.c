@@ -6,7 +6,7 @@
 /*   By: christian <christian@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/25 18:34:14 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/06/15 20:32:03 by christian        ###   ########.fr       */
+/*   Updated: 2023/06/15 20:46:16 by christian        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,6 @@ static int	verify_end(t_philo *philo)
 		pthread_mutex_unlock(philo->common_data->dead_or_alive_mutex);
 		return (1);
 	}
-	//if (get_current_timestamp(philo) - philo->last_meal >= philo->common_data->time_to_die)
-	//{
-	//	philo->common_data->someone_died = 1;
-	//	prints(philo, 4);
-	//	pthread_mutex_unlock(philo->common_data->dead_or_alive_mutex);
-	//	return (1);
-	//}
 	pthread_mutex_unlock(philo->common_data->dead_or_alive_mutex);
 	return (0);
 }
@@ -63,6 +56,13 @@ void	*philo_life(void *philo_data)
 
 	philo = (t_philo *) philo_data;
 	set_timestamps(philo);
+	if (philo->common_data->num_of_philos == 1)
+	{
+		prints(philo, 0);
+		usleep(philo->common_data->time_to_die * 1000);
+		prints(philo, 4);
+		return (NULL);
+	}
 	if (philo->id % 2 == 1)
 	{
 		usleep(1400);
@@ -70,13 +70,6 @@ void	*philo_life(void *philo_data)
 	while (verify_end(philo) == 0)
 	{
 		pthread_mutex_lock(philo->left_fork);
-		if (verify_end(philo))
-		{
-			pthread_mutex_unlock(philo->left_fork);
-			break ;
-		}
-		prints(philo, 0); //got fork
-
 		pthread_mutex_lock(philo->right_fork);
 		if (verify_end(philo))
 		{
@@ -84,6 +77,7 @@ void	*philo_life(void *philo_data)
 			pthread_mutex_unlock(philo->right_fork);
 			break ;
 		}
+		prints(philo, 0); //got fork	
 		prints(philo, 0); //got fork
 		prints(philo, 1); //Eating
 		usleep((philo)->common_data->time_to_eat * 1000);
@@ -195,7 +189,6 @@ void	run_life_cycle(t_common_data *common)
 	philo_threads = (pthread_t *) malloc(sizeof(pthread_t) * common->num_of_philos);
 	philos = (t_philo **) malloc(sizeof(t_philo *) * common->num_of_philos);
 	run_threads(common, philo_threads, philos);
-	//join_threads(common, philo_threads);
 	free(philo_threads);
 	free_philos(philos, common->num_of_philos);
 	free_common_data(common);
