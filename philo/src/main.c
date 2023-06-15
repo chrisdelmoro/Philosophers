@@ -6,7 +6,7 @@
 /*   By: christian <christian@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/25 18:34:14 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/06/15 19:59:56 by christian        ###   ########.fr       */
+/*   Updated: 2023/06/15 20:32:03 by christian        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,13 @@ static int	verify_end(t_philo *philo)
 		pthread_mutex_unlock(philo->common_data->dead_or_alive_mutex);
 		return (1);
 	}
-	if (get_current_timestamp(philo) - philo->last_meal >= philo->common_data->time_to_die)
-	{
-		philo->common_data->someone_died = 1;
-		prints(philo, 4);
-		pthread_mutex_unlock(philo->common_data->dead_or_alive_mutex);
-		return (1);
-	}
+	//if (get_current_timestamp(philo) - philo->last_meal >= philo->common_data->time_to_die)
+	//{
+	//	philo->common_data->someone_died = 1;
+	//	prints(philo, 4);
+	//	pthread_mutex_unlock(philo->common_data->dead_or_alive_mutex);
+	//	return (1);
+	//}
 	pthread_mutex_unlock(philo->common_data->dead_or_alive_mutex);
 	return (0);
 }
@@ -63,6 +63,10 @@ void	*philo_life(void *philo_data)
 
 	philo = (t_philo *) philo_data;
 	set_timestamps(philo);
+	if (philo->id % 2 == 1)
+	{
+		usleep(1400);
+	}
 	while (verify_end(philo) == 0)
 	{
 		pthread_mutex_lock(philo->left_fork);
@@ -109,9 +113,53 @@ void	*philo_life(void *philo_data)
 	return (NULL);
 }
 
+void	*monitor_thread(void *philos_data)
+{
+	t_philo	**philos;
+	int		i;
+	int		eats_count;
+
+	philos = (t_philo **) philos_data;
+	i = 0;
+	eats_count = 0;
+	if (philos[i]->common_data->num_of_philos == 1)
+        return (NULL);
+    while (1)
+    {
+		usleep(1000);
+		pthread_mutex_lock(philos[i]->common_data->dead_or_alive_mutex);
+		if (get_current_timestamp(philos[i]) - philos[i]->last_meal > \
+		philos[i]->common_data->time_to_die)
+		{
+			while (eats_count < philos[i]->common_data->num_of_philos \
+			&& philos[eats_count]->meals_had \
+			== philos[eats_count]->common_data->opt_num_of_meals)
+			{
+				eats_count++;
+			}
+			if (eats_count == philos[i]->common_data->num_of_philos \
+			&& philos[i]->common_data->opt_num_of_meals != -1)
+			{
+				pthread_mutex_unlock(philos[i]->common_data->dead_or_alive_mutex);
+				return (NULL);
+			}
+			philos[i]->common_data->someone_died = 1;
+			prints(philos[i], 4); //Died
+			pthread_mutex_unlock(philos[i]->common_data->dead_or_alive_mutex);
+			return (NULL);
+		}
+		pthread_mutex_unlock(philos[i]->common_data->dead_or_alive_mutex);
+		if (i == philos[i]->common_data->num_of_philos - 1)
+			i = 0;
+		i++;
+	}
+	return (NULL);
+}
+
 void	run_threads(t_common_data *common, pthread_t *philo_threads, \
 t_philo **philos)
 {
+	pthread_t monitor;
 	int	i;
 
 	i = 0;
@@ -129,18 +177,14 @@ t_philo **philos)
 		}	
 		i++;
 	}
-}
-
-void	join_threads(t_common_data *common, pthread_t *philo_threads)
-{
-	int	i;
-
+	pthread_create(&monitor, NULL, &monitor_thread, (void *) philos);
 	i = 0;
 	while (i < common->num_of_philos)
 	{
 		pthread_join(philo_threads[i], NULL);
 		i++;
 	}
+	pthread_join(monitor, NULL);
 }
 
 void	run_life_cycle(t_common_data *common)
@@ -151,7 +195,7 @@ void	run_life_cycle(t_common_data *common)
 	philo_threads = (pthread_t *) malloc(sizeof(pthread_t) * common->num_of_philos);
 	philos = (t_philo **) malloc(sizeof(t_philo *) * common->num_of_philos);
 	run_threads(common, philo_threads, philos);
-	join_threads(common, philo_threads);
+	//join_threads(common, philo_threads);
 	free(philo_threads);
 	free_philos(philos, common->num_of_philos);
 	free_common_data(common);
