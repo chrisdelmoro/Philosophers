@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccamargo <ccamargo@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: christian <christian@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/25 18:34:14 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/06/06 15:46:32 by ccamargo         ###   ########.fr       */
+/*   Updated: 2023/06/15 19:47:10 by christian        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,46 @@
 
 static int	verify_end(t_philo *philo)
 {
-	pthread_mutex_lock(philo->common_data->last_meal_mutex);
+	pthread_mutex_lock(philo->common_data->dead_or_alive_mutex);
 	if (get_current_timestamp(philo) - philo->last_meal >= philo->common_data->time_to_die)
 	{
-		pthread_mutex_unlock(philo->common_data->last_meal_mutex);
 		philo->common_data->someone_died = 1;
+		pthread_mutex_unlock(philo->common_data->dead_or_alive_mutex);
+		return (1);
 	}
-	pthread_mutex_unlock(philo->common_data->last_meal_mutex);
-	pthread_mutex_lock(philo->common_data->dead_or_alive_mutex);
 	if (philo->common_data->someone_died == 1)
 	{
 		pthread_mutex_unlock(philo->common_data->dead_or_alive_mutex);
 		return (1);
 	}
 	pthread_mutex_unlock(philo->common_data->dead_or_alive_mutex);
-	/* pthread_mutex_lock(philo->common_data->meals_had_mutex);
-	if (philo->common_data->opt_num_of_meals != -1 \
-	&& philo->meals_had > philo->common_data->opt_num_of_meals)
-	{
-		pthread_mutex_unlock(philo->common_data->meals_had_mutex);
-		return (1);
-	}
-	pthread_mutex_unlock(philo->common_data->meals_had_mutex); */
 	return (0);
+}
+
+static void	prints(t_philo *philo, int action)
+{
+	pthread_mutex_lock(philo->common_data->print);
+	if (action == 0)
+	{
+		printf("%lld Philosopher %d has taken a fork.\n", get_current_timestamp(philo), (philo)->id + 1);
+	}
+	else if (action == 1)
+	{
+		printf("%lld Philosopher %d is eating.\n", get_current_timestamp(philo), (philo)->id + 1);
+	}
+	else if (action == 2)
+	{
+		printf("%lld Philosopher %d is sleeping.\n", get_current_timestamp(philo), (philo)->id + 1);
+	}
+	else if (action == 3)
+	{
+		printf("%lld Philosopher %d is thinking.\n", get_current_timestamp(philo), (philo)->id + 1);
+	}
+	else
+	{
+		printf("%lld Philosopher %d died.\n", get_current_timestamp(philo), (philo)->id + 1);
+	}
+	pthread_mutex_unlock(philo->common_data->print);
 }
 
 void	*philo_life(void *philo_data)
@@ -44,51 +61,52 @@ void	*philo_life(void *philo_data)
 	t_philo	*philo;
 
 	philo = (t_philo *) philo_data;
-	pthread_mutex_lock(philo->common_data->get_time);
 	set_timestamps(philo);
-	pthread_mutex_unlock(philo->common_data->get_time);
 	while (verify_end(philo) == 0)
 	{
 		pthread_mutex_lock(philo->left_fork);
-		pthread_mutex_lock(philo->common_data->print);
-		printf("%lld Philosopher %d has taken a fork.\n", get_current_timestamp(philo), (philo)->id + 1);
-		pthread_mutex_unlock(philo->common_data->print);
+		if (verify_end(philo))
+		{
+			prints(philo, 4);
+			pthread_mutex_unlock(philo->left_fork);
+			break ;
+		}
+		prints(philo, 0); //got fork
 
 		pthread_mutex_lock(philo->right_fork);
-		pthread_mutex_lock(philo->common_data->print);
-		printf("%lld Philosopher %d has taken a fork.\n", get_current_timestamp(philo), (philo)->id + 1);
-		pthread_mutex_unlock(philo->common_data->print);
-
-		pthread_mutex_lock(philo->common_data->print);
-		printf("%lld Philosopher %d is eating.\n", get_current_timestamp(philo), (philo)->id + 1);
-		pthread_mutex_unlock(philo->common_data->print);
-
+		if (verify_end(philo))
+		{
+			prints(philo, 4);
+			pthread_mutex_unlock(philo->left_fork);
+			pthread_mutex_unlock(philo->right_fork);
+			break ;
+		}
+		prints(philo, 0); //got fork
+		prints(philo, 1); //Eating
 		usleep((philo)->common_data->time_to_eat * 1000);
-		pthread_mutex_lock(philo->common_data->last_meal_mutex);
+
+		pthread_mutex_lock(philo->common_data->dead_or_alive_mutex);
 		philo->last_meal = get_current_timestamp(philo);
-		pthread_mutex_unlock(philo->common_data->last_meal_mutex);
+		pthread_mutex_unlock(philo->common_data->dead_or_alive_mutex);
 
 		pthread_mutex_unlock(philo->left_fork);
 		pthread_mutex_unlock(philo->right_fork);
 
 		if (verify_end(philo))
 		{
-			printf("someone died\n");
+			prints(philo, 4);
 			break ;
 		}
-		pthread_mutex_lock(philo->common_data->print);
-		printf("%lld Philosopher %d is sleeping.\n", get_current_timestamp(philo), (philo)->id + 1);
-		pthread_mutex_unlock(philo->common_data->print);
+		prints(philo, 2); //Sleeping
 		usleep((philo)->common_data->time_to_sleep * 1000);
 
 		if (verify_end(philo))
 		{
-			printf("someone died\n");
+			prints(philo, 4);
 			break ;
 		}
-		pthread_mutex_lock(philo->common_data->print);
-		printf("%lld Philosopher %d is thinking.\n", get_current_timestamp(philo), (philo)->id + 1);
-		pthread_mutex_unlock(philo->common_data->print);
+		prints(philo, 3); //Thinking
+		usleep(1000);
 	}
 	return (NULL);
 }

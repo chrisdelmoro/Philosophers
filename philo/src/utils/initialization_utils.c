@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialization_utils.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccamargo <ccamargo@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: christian <christian@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 02:24:59 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/06/06 15:25:04 by ccamargo         ###   ########.fr       */
+/*   Updated: 2023/06/15 19:31:49 by christian        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ t_common_data	*init_common_data(char **argv)
 	else
 		common->opt_num_of_meals = -1;
 	common->timestamp_init = -1;
-	common->timestamp_current = -1;
+	//common->timestamp_current = -1;
 	common->someone_died = 0;
 	init_common_data_2(common);
 	return (common);
