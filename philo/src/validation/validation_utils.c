@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   validation_utils.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccamargo <ccamargo@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: ccamargo <ccamargo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/25 19:17:46 by ccamargo          #+#    #+#             */
-/*   Updated: 2023/05/30 15:57:14 by ccamargo         ###   ########.fr       */
+/*   Updated: 2023/06/27 19:44:40 by ccamargo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,7 @@ static int	is_number_of_args_valid(int argc)
 {
 	if (argc < 5 || argc > 6)
 	{
-		printf("Error! ");
-		printf("Wrong number of arguments!\n");
+		printf("Error! Wrong number of arguments!\n");
 		printf("Usage: ./philosophers number_of_philosophers time_to_die \
 		time_to_eat time_to_sleep \
 		[number_of_times_each_philosopher_must_eat]\n");
@@ -39,8 +38,13 @@ static int	are_params_numbers(char **argv)
 		{
 			if (!ft_isdigit(argv[i][j]))
 			{
-				printf("Error! ");
-				printf("All parameters must be positive numbers!\n");
+				printf("Error! All parameters must be positive numbers!\n");
+				return (0);
+			}
+			if (ft_atoi(argv[i]) == 0)
+			{
+				printf("Error! All parameters must be number greater than \
+zero!\n");
 				return (0);
 			}
 			j++;
